@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduSync</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0d0f14;
+  --surface:#161a23;
+  --surface2:#1e2330;
+  --surface3:#252b3b;
+  --border:#2a3144;
+  --border2:#323d56;
+  --accent:#4f8ef7;
+  --accent2:#7c5af0;
+  --accent3:#2dd4a0;
+  --accent4:#f7a24f;
+  --danger:#f75f5f;
+  --text:#e8eaf0;
+  --text2:#8b93a8;
+  --text3:#4d5668;
+  --radius:12px;
+  --font:'Space Grotesk',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);overflow:hidden;font-size:14px;}
+
+/* ── SCREENS ── */
+.screen{display:none;width:100%;height:100%;}
+.screen.active{display:flex;}
+
+/* ─────────────────────────────────────────────
+   LOGIN SCREEN
+───────────────────────────────────────────── */
+#loginScreen{align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden;}
+.login-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 75% 35%,rgba(79,142,247,.07) 0%,transparent 65%),
+             radial-gradient(ellipse 50% 50% at 20% 70%,rgba(124,90,240,.06) 0%,transparent 65%);}
+.login-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(42,49,68,.4) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(42,49,68,.4) 1px,transparent 1px);
+  background-size:44px 44px;}
+.login-card{
+  position:relative;z-index:1;width:440px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:22px;padding:44px;
+  box-shadow:0 40px 100px rgba(0,0,0,.55);}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px;}
+.login-logo-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:20px;color:#fff;letter-spacing:-1px;}
+.login-logo-text{font-size:24px;font-weight:700;letter-spacing:-.5px;}
+.login-logo-text span{color:var(--accent);}
+.login-title{font-size:26px;font-weight:700;margin-bottom:6px;}
+.login-sub{color:var(--text2);font-size:14px;margin-bottom:28px;}
+.tab-row{display:flex;gap:0;margin-bottom:24px;background:var(--surface2);border-radius:10px;padding:4px;}
+.tab-btn{flex:1;padding:9px;border:none;background:none;color:var(--text2);font-family:var(--font);
+         font-size:13px;font-weight:500;cursor:pointer;border-radius:7px;transition:all .2s;}
+.tab-btn.active{background:var(--surface3);color:var(--text);}
+.field-group{margin-bottom:16px;}
+.field-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;
+             letter-spacing:.9px;margin-bottom:6px;display:block;}
+.field-input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:11px 14px;color:var(--text);
+  font-family:var(--font);font-size:14px;outline:none;transition:border-color .2s;}
+.field-input:focus{border-color:var(--accent);}
+.field-input::placeholder{color:var(--text3);}
+select.field-input{cursor:pointer;}
+textarea.field-input{resize:vertical;min-height:100px;line-height:1.6;}
+.btn-primary{
+  width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;border-radius:10px;color:#fff;font-family:var(--font);
+  font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s;margin-top:6px;letter-spacing:.2px;}
+.btn-primary:hover{opacity:.88;}
+.login-form{display:none;}
+.login-form.active{display:block;}
+.err-msg{color:var(--danger);font-size:12px;margin-bottom:10px;min-height:16px;}
+
+/* ─────────────────────────────────────────────
+   APP LAYOUT
+───────────────────────────────────────────── */
+#appScreen{flex-direction:row;}
+
+/* SIDEBAR */
+.sidebar{
+  width:228px;min-width:228px;background:var(--surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.sidebar-logo{
+  padding:20px 20px 16px;display:flex;align-items:center;
+  gap:10px;border-bottom:1px solid var(--border);}
+.sidebar-logo-icon{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:15px;color:#fff;}
+.sidebar-logo-name{font-size:17px;font-weight:700;letter-spacing:-.3px;}
+.sidebar-logo-name span{color:var(--accent);}
+.sidebar-user{
+  padding:14px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;}
+.user-avatar{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent3),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;}
+.user-name{font-size:13px;font-weight:600;line-height:1.3;}
+.user-role{font-size:11px;color:var(--text2);}
+.sidebar-nav{flex:1;padding:10px 8px;overflow-y:auto;}
+.nav-label{
+  font-size:10px;font-weight:600;color:var(--text3);
+  text-transform:uppercase;letter-spacing:1px;padding:10px 12px 4px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:9px;cursor:pointer;margin-bottom:2px;
+  transition:all .15s;color:var(--text2);font-size:13px;font-weight:500;user-select:none;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:rgba(79,142,247,.13);color:var(--accent);}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-badge{
+  margin-left:auto;background:var(--accent);color:#fff;
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:var(--mono);}
+.nav-badge.green{background:var(--accent3);}
+.sidebar-footer{padding:10px 8px;border-top:1px solid var(--border);}
+
+/* MAIN AREA */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{
+  height:56px;padding:0 24px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border);
+  background:var(--surface);flex-shrink:0;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-title{font-size:16px;font-weight:700;}
+.topbar-subtitle{font-size:12px;color:var(--text3);}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+.search-wrap{position:relative;}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;}
+.search-bar{
+  background:var(--surface2);border:1px solid var(--border);border-radius:9px;
+  padding:7px 12px 7px 30px;color:var(--text);font-family:var(--font);
+  font-size:13px;outline:none;width:220px;transition:border-color .2s;}
+.search-bar:focus{border-color:var(--accent);}
+.search-bar::placeholder{color:var(--text3);}
+.icon-btn{
+  width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;transition:all .15s;color:var(--text2);}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* BUTTONS */
+.btn{
+  padding:8px 16px;border-radius:9px;font-family:var(--font);
+  font-size:13px;font-weight:600;cursor:pointer;border:none;
+  transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+.btn-accent:hover{opacity:.88;}
+.btn-ghost{background:var(--surface2);border:1px solid var(--border);color:var(--text2);}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2);}
+.btn-danger{background:rgba(247,95,95,.1);border:1px solid rgba(247,95,95,.25);color:var(--danger);}
+.btn-danger:hover{background:rgba(247,95,95,.2);}
+.btn-green{background:rgba(45,212,160,.1);border:1px solid rgba(45,212,160,.25);color:var(--accent3);}
+.btn-green:hover{background:rgba(45,212,160,.2);}
+
+/* PANELS */
+.panel{display:none;flex:1;overflow-y:auto;padding:24px;}
+.panel.active{display:block;}
+
+/* ─────────────────────────────────────────────
+   DASHBOARD
+───────────────────────────────────────────── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;}
+.stat-card::after{
+  content:'';position:absolute;bottom:-20px;right:-20px;
+  width:80px;height:80px;border-radius:50%;opacity:.06;}
+.stat-card.blue::after{background:var(--accent);}
+.stat-card.purple::after{background:var(--accent2);}
+.stat-card.green::after{background:var(--accent3);}
+.stat-card.amber::after{background:var(--accent4);}
+.stat-label{font-size:11px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;}
+.stat-val{font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1;}
+.stat-val.blue{color:var(--accent);}
+.stat-val.purple{color:var(--accent2);}
+.stat-val.green{color:var(--accent3);}
+.stat-val.amber{color:var(--accent4);}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:6px;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-title{font-size:14px;font-weight:600;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.note-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;cursor:pointer;
+  transition:all .18s;position:relative;overflow:hidden;}
+.note-card-bar{position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:.2s;}
+.note-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.note-card:hover .note-card-bar{opacity:1;}
+.note-card-title{font-size:14px;font-weight:600;margin-bottom:6px;line-height:1.4;}
+.note-card-preview{
+  font-size:12px;color:var(--text2);line-height:1.65;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.note-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;}
+.note-tag{
+  display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;
+  background:rgba(79,142,247,.12);color:var(--accent);}
+.note-date{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.note-card-actions{display:flex;gap:5px;opacity:0;transition:.18s;}
+.note-card:hover .note-card-actions{opacity:1;}
+.note-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.act-btn{
+  width:26px;height:26px;border:1px solid var(--border);background:var(--surface2);
+  border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;cursor:pointer;transition:.15s;}
+.act-btn:hover{border-color:var(--accent);color:var(--accent);}
+.act-btn.del:hover{border-color:var(--danger);color:var(--danger);}
+.empty-state{
+  text-align:center;padding:48px 24px;color:var(--text3);
+  font-size:14px;background:var(--surface);border:1px dashed var(--border);
+  border-radius:var(--radius);}
+.empty-state .empty-icon{font-size:36px;margin-bottom:12px;}
+
+/* ─────────────────────────────────────────────
+   NOTES PANEL TOOLBAR
+───────────────────────────────────────────── */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px;}
+
+/* ─────────────────────────────────────────────
+   FILE TABLE
+───────────────────────────────────────────── */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.file-table{width:100%;border-collapse:collapse;}
+.file-table th{
+  text-align:left;font-size:11px;font-weight:600;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.7px;padding:12px 16px;
+  background:var(--surface2);border-bottom:1px solid var(--border);}
+.file-table td{padding:12px 16px;border-bottom:1px solid rgba(42,49,68,.5);vertical-align:middle;}
+.file-table tr:last-child td{border-bottom:none;}
+.file-table tr:hover td{background:rgba(30,35,50,.6);}
+.file-name-cell{display:flex;align-items:center;gap:10px;font-weight:500;}
+.file-icon-big{font-size:20px;flex-shrink:0;}
+.file-badge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:10px;font-weight:700;font-family:var(--mono);text-transform:uppercase;}
+.fb-PDF{background:rgba(247,95,95,.12);color:var(--danger);}
+.fb-Image{background:rgba(45,212,160,.12);color:var(--accent3);}
+.fb-Doc{background:rgba(79,142,247,.12);color:var(--accent);}
+.fb-PPT{background:rgba(247,162,79,.12);color:var(--accent4);}
+.fb-Excel{background:rgba(45,212,160,.12);color:var(--accent3);}
+.fb-Archive{background:rgba(124,90,240,.12);color:var(--accent2);}
+.fb-Other{background:rgba(139,147,168,.12);color:var(--text2);}
+.td-actions{display:flex;gap:6px;}
+.owner-only{font-size:10px;color:var(--text3);padding:4px 8px;}
+
+/* ─────────────────────────────────────────────
+   CHAT
+───────────────────────────────────────────── */
+#panel-chat{padding:0;}
+.chat-layout{display:flex;height:calc(100vh - 56px);}
+.chat-sidebar{
+  width:220px;min-width:220px;background:var(--surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.chat-sidebar-title{
+  padding:14px 16px;font-size:11px;font-weight:600;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);}
+.chat-rooms{padding:8px;}
+.chat-room{
+  padding:10px 12px;cursor:pointer;border-radius:9px;margin-bottom:3px;
+  transition:.15s;user-select:none;}
+.chat-room:hover{background:var(--surface2);}
+.chat-room.active{background:rgba(79,142,247,.1);color:var(--accent);}
+.chat-room-name{font-size:13px;font-weight:500;}
+.chat-room-last{font-size:11px;color:var(--text3);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.chat-header{
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;}
+.chat-room-title{font-size:15px;font-weight:600;}
+.chat-room-desc{font-size:12px;color:var(--text3);margin-left:auto;}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.msg{display:flex;gap:10px;align-items:flex-start;animation:msgIn .2s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.mine{flex-direction:row-reverse;}
+.msg-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;}
+.msg-body{max-width:68%;}
+.msg-bubble{
+  padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.6;
+  word-break:break-word;}
+.msg-bubble.other{background:var(--surface2);border-radius:4px 14px 14px 14px;}
+.msg-bubble.mine{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border-radius:14px 4px 14px 14px;}
+.msg-meta{font-size:10px;color:var(--text3);margin-top:4px;}
+.msg.mine .msg-meta{text-align:right;}
+.chat-input-area{
+  padding:14px 20px;border-top:1px solid var(--border);
+  display:flex;gap:10px;align-items:flex-end;}
+.chat-input{
+  flex:1;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;color:var(--text);
+  font-family:var(--font);font-size:13px;outline:none;resize:none;
+  max-height:100px;transition:border-color .2s;line-height:1.5;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-send{
+  padding:10px 18px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;border-radius:10px;color:#fff;font-family:var(--font);
+  font-size:13px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap;}
+.chat-send:hover{opacity:.88;}
+
+/* ─────────────────────────────────────────────
+   PYQ
+───────────────────────────────────────────── */
+.filter-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.chip{
+  padding:6px 14px;border-radius:20px;border:1px solid var(--border);
+  background:var(--surface);font-size:12px;font-weight:500;
+  cursor:pointer;transition:.15s;color:var(--text2);user-select:none;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+.chip.active{background:rgba(79,142,247,.12);border-color:var(--accent);color:var(--accent);}
+.pyq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;}
+.pyq-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;cursor:pointer;transition:.18s;}
+.pyq-card:hover{border-color:var(--accent2);transform:translateY(-2px);}
+.pyq-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.pyq-subject-badge{
+  padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;
+  background:rgba(124,90,240,.12);color:var(--accent2);}
+.pyq-year{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.pyq-title{font-size:13px;font-weight:600;margin-bottom:6px;line-height:1.4;}
+.pyq-desc{font-size:12px;color:var(--text2);line-height:1.55;}
+.pyq-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+.pyq-uploader{font-size:11px;color:var(--text3);}
+
+/* ─────────────────────────────────────────────
+   PERMISSIONS
+───────────────────────────────────────────── */
+.perm-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px;margin-bottom:16px;}
+.perm-card-title{
+  font-size:14px;font-weight:600;margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--border);}
+.perm-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border-bottom:1px solid rgba(42,49,68,.4);}
+.perm-row:last-child{border-bottom:none;padding-bottom:0;}
+.perm-info{}
+.perm-label{font-size:13px;font-weight:500;margin-bottom:3px;display:flex;align-items:center;gap:8px;}
+.perm-sub{font-size:11px;color:var(--text2);}
+.badge{
+  display:inline-block;padding:2px 7px;border-radius:4px;
+  font-size:10px;font-weight:700;vertical-align:middle;}
+.badge-owner{background:rgba(45,212,160,.12);color:var(--accent3);}
+.badge-all{background:rgba(79,142,247,.12);color:var(--accent);}
+.badge-locked{background:rgba(247,95,95,.12);color:var(--danger);}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-slider{
+  position:absolute;cursor:pointer;inset:0;background:var(--surface3);
+  border-radius:22px;transition:.25s;}
+.toggle-slider::before{
+  content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;
+  background:var(--text3);border-radius:50%;transition:.25s;}
+.toggle input:checked+.toggle-slider{background:var(--accent);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);background:#fff;}
+.session-mono{font-family:var(--mono);font-size:12px;color:var(--accent);word-break:break-all;}
+
+/* ─────────────────────────────────────────────
+   MODAL
+───────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;
+  display:none;align-items:center;justify-content:center;
+  animation:fadeIn .15s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:var(--surface);border:1px solid var(--border2);border-radius:18px;
+  padding:28px;width:520px;max-width:94vw;
+  box-shadow:0 48px 120px rgba(0,0,0,.65);
+  animation:slideUp .2s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:22px;}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;}
+
+/* PYQ meta modal */
+.pyq-meta-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:500;
+  background:var(--surface2);border:1px solid var(--border2);border-radius:10px;
+  padding:12px 18px;font-size:13px;font-weight:500;
+  transform:translateY(80px);opacity:0;transition:.3s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;gap:10px;max-width:340px;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:rgba(45,212,160,.4);color:var(--accent3);}
+.toast.error{border-color:rgba(247,95,95,.4);color:var(--danger);}
+.toast-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.toast.success .toast-dot{background:var(--accent3);}
+.toast.error   .toast-dot{background:var(--danger);}
+
+/* ─────────────────────────────────────────────
+   LOADING SPINNER
+───────────────────────────────────────────── */
+.spinner{display:inline-block;width:16px;height:16px;
+  border:2px solid var(--border2);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════
+     LOGIN SCREEN
+═══════════════════════════════ -->
+<div id="loginScreen" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-grid"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">ES</div>
+      <div class="login-logo-text">Edu<span>Sync</span></div>
+    </div>
+    <div class="login-title">Welcome back 👋</div>
+    <div class="login-sub">Sign in to your student workspace</div>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="tab-btn"        onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- SIGN IN -->
+    <div id="loginForm" class="login-form active">
+      <div class="err-msg" id="loginErr"></div>
+      <div class="field-group">
+        <label class="field-label">Username</label>
+        <input class="field-input" id="loginUser" placeholder="e.g. demo" autocomplete="off"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password</label>
+        <input class="field-input" type="password" id="loginPass" placeholder="••••••••"/>
+      </div>
+      <button class="btn-primary" onclick="doLogin()">Sign In →</button>
+      <div style="font-size:12px;color:var(--text3);margin-top:14px;text-align:center;">
+        Demo: username <code style="color:var(--accent)">demo</code> / password <code style="color:var(--accent)">password</code>
+      </div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div id="signupForm" class="login-form">
+      <div class="err-msg" id="signupErr"></div>
+      <div class="field-group">
+        <label class="field-label">Full Name</label>
+        <input class="field-input" id="regName" placeholder="Isha Damle"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Username</label>
+        <input class="field-input" id="regUser" placeholder="isha_damle"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <input class="field-input" id="regEmail" placeholder="isha@mitwpu.edu.in"/>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Password</label>
+        <input class="field-input" type="password" id="regPass" placeholder="Min. 6 characters"/>
+      </div>
+      <button class="btn-primary" onclick="doRegister()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     MAIN APP
+═══════════════════════════════ -->
+<div id="appScreen" class="screen">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">ES</div>
+      <div class="sidebar-logo-name">Edu<span>Sync</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebarAvatar">KS</div>
+      <div>
+        <div class="user-name"  id="sidebarName">Krishna Singh</div>
+        <div class="user-role">Student</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Main</div>
+      <div class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard',this)">
+        <span class="nav-icon">⊞</span> Dashboard
+      </div>
+      <div class="nav-item" id="nav-notes" onclick="showPanel('notes',this)">
+        <span class="nav-icon">📝</span> My Notes
+        <span class="nav-badge" id="noteBadge">0</span>
+      </div>
+      <div class="nav-item" id="nav-resources" onclick="showPanel('resources',this)">
+        <span class="nav-icon">📂</span> Resources
+        <span class="nav-badge green" id="resBadge">0</span>
+      </div>
+      <div class="nav-label">Collaborate</div>
+      <div class="nav-item" id="nav-chat" onclick="showPanel('chat',this)">
+        <span class="nav-icon">💬</span> Chat
+      </div>
+      <div class="nav-item" id="nav-pyq" onclick="showPanel('pyq',this)">
+        <span class="nav-icon">📚</span> PYQ Bank
+      </div>
+      <div class="nav-label">Settings</div>
+      <div class="nav-item" id="nav-perms" onclick="showPanel('perms',this)">
+        <span class="nav-icon">🔐</span> Permissions
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="doLogout()" style="color:var(--danger);">
+        <span class="nav-icon">⇤</span> Logout
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input class="search-bar" id="globalSearch" placeholder="Search notes…"
+                 oninput="handleSearch(this.value)" autocomplete="off"/>
+        </div>
+        <div class="icon-btn" title="Refresh" onclick="refreshCurrentPanel()">↺</div>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD PANEL ── -->
+    <div id="panel-dashboard" class="panel active">
+      <div class="stats-row">
+        <div class="stat-card blue">
+          <div class="stat-label">Total Notes</div>
+          <div class="stat-val blue" id="statNotes">—</div>
+          <div class="stat-sub">All subjects</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Resources</div>
+          <div class="stat-val purple" id="statFiles">—</div>
+          <div class="stat-sub">Uploaded files</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Messages</div>
+          <div class="stat-val green" id="statMsgs">—</div>
+          <div class="stat-sub">Across channels</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">PYQ Papers</div>
+          <div class="stat-val amber" id="statPYQs">—</div>
+          <div class="stat-sub">Available</div>
+        </div>
+      </div>
+
+      <div class="section-hdr">
+        <div class="section-title">Recent Notes</div>
+        <button class="btn btn-accent" onclick="showPanel('notes',document.getElementById('nav-notes'));openNoteModal()">+ Add Note</button>
+      </div>
+      <div class="cards-grid" id="dashNoteCards">
+        <div class="empty-state"><div class="empty-icon">📝</div>No notes yet.</div>
+      </div>
+
+      <div class="section-hdr" style="margin-top:24px;">
+        <div class="section-title">Recent Uploads</div>
+        <button class="btn btn-ghost" onclick="showPanel('resources',document.getElementById('nav-resources'))">View all</button>
+      </div>
+      <div class="table-wrap">
+        <table class="file-table">
+          <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Date</th></tr></thead>
+          <tbody id="dashFilesBody"><tr><td colspan="4" style="color:var(--text3);padding:20px 16px;">No uploads yet.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── NOTES PANEL ── -->
+    <div id="panel-notes" class="panel">
+      <div class="toolbar">
+        <button class="btn btn-accent" onclick="openNoteModal()">+ New Note</button>
+        <select class="field-input" id="noteSubjectFilter" style="width:160px;padding:8px 12px;"
+                onchange="loadNotes()">
+          <option value="">All Subjects</option>
+          <option>DBMS</option><option>OS</option><option>CN</option>
+          <option>DSA</option><option>Java</option>
+        </select>
+      </div>
+      <div class="cards-grid" id="notesGrid">
+        <div class="empty-state"><div class="empty-icon">📝</div>No notes yet. Create your first one!</div>
+      </div>
+    </div>
+
+    <!-- ── RESOURCES PANEL ── -->
+    <div id="panel-resources" class="panel">
+      <div class="toolbar">
+        <button class="btn btn-accent" onclick="java.openFileChooser(0)">⬆ Upload File</button>
+        <select class="field-input" id="fileTypeFilter" style="width:160px;padding:8px 12px;"
+                onchange="loadResources()">
+          <option value="">All Types</option>
+          <option>PDF</option><option>Image</option><option>Doc</option>
+          <option>PPT</option><option>Excel</option><option>Archive</option><option>Other</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table class="file-table">
+          <thead>
+            <tr>
+              <th>Filename</th><th>Type</th><th>Size</th>
+              <th>Uploaded By</th><th>Date</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="filesTableBody">
+            <tr><td colspan="6" style="color:var(--text3);padding:24px 16px;">No files yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── CHAT PANEL ── -->
+    <div id="panel-chat" class="panel">
+      <div class="chat-layout">
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-title">Channels</div>
+          <div class="chat-rooms">
+            <div class="chat-room active" id="room-general" onclick="switchChannel('general',this)">
+              <div class="chat-room-name"># General</div>
+              <div class="chat-room-last">Welcome to EduSync!</div>
+            </div>
+            <div class="chat-room" id="room-dbms" onclick="switchChannel('dbms',this)">
+              <div class="chat-room-name"># DBMS Study</div>
+              <div class="chat-room-last">Ask doubts here</div>
+            </div>
+            <div class="chat-room" id="room-java" onclick="switchChannel('java',this)">
+              <div class="chat-room-name"># Java Help</div>
+              <div class="chat-room-last">Swing & JDBC tips</div>
+            </div>
+            <div class="chat-room" id="room-doubts" onclick="switchChannel('doubts',this)">
+              <div class="chat-room-name"># Doubts</div>
+              <div class="chat-room-last">General questions</div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-main">
+          <div class="chat-header">
+            <div class="chat-room-title" id="chatChannelTitle"># general</div>
+            <div class="chat-room-desc" id="chatChannelDesc">General discussion</div>
+          </div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input-area">
+            <textarea class="chat-input" id="chatInput" placeholder="Type a message… (Enter to send)"
+              rows="1"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+            <button class="chat-send" onclick="sendMessage()">Send ↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PYQ PANEL ── -->
+    <div id="panel-pyq" class="panel">
+      <div class="toolbar">
+        <button class="btn btn-accent" onclick="java.openPYQChooser()">⬆ Upload PYQ</button>
+      </div>
+      <div class="filter-chips" id="pyqChips">
+        <div class="chip active" onclick="filterPYQ('all',this)">All Papers</div>
+        <div class="chip" onclick="filterPYQ('DBMS',this)">DBMS</div>
+        <div class="chip" onclick="filterPYQ('OS',this)">OS</div>
+        <div class="chip" onclick="filterPYQ('CN',this)">Computer Networks</div>
+        <div class="chip" onclick="filterPYQ('DSA',this)">DSA</div>
+        <div class="chip" onclick="filterPYQ('Java',this)">Java</div>
+      </div>
+      <div class="pyq-grid" id="pyqGrid">
+        <div class="empty-state"><div class="empty-icon">📚</div>Loading PYQs…</div>
+      </div>
+    </div>
+
+    <!-- ── PERMISSIONS PANEL ── -->
+    <div id="panel-perms" class="panel">
+      <div class="perm-card">
+        <div class="perm-card-title">Access Control Rules</div>
+        <div class="perm-row">
+          <div class="perm-info">
+            <div class="perm-label">Notes — Edit &amp; Delete <span class="badge badge-owner">Owner Only</span></div>
+            <div class="perm-sub">Only the note creator can edit or delete their note. Others get read-only access.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked disabled/><span class="toggle-slider"></span></label>
+        </div>
+        <div class="perm-row">
+          <div class="perm-info">
+            <div class="perm-label">Resources — Delete <span class="badge badge-owner">Owner Only</span></div>
+            <div class="perm-sub">Only the uploader can remove a file from the system.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked disabled/><span class="toggle-slider"></span></label>
+        </div>
+        <div class="perm-row">
+          <div class="perm-info">
+            <div class="perm-label">Notes — View <span class="badge badge-all">All Users</span></div>
+            <div class="perm-sub">All logged-in students can read notes from any member.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+        </div>
+        <div class="perm-row">
+          <div class="perm-info">
+            <div class="perm-label">Resources — Download / Open <span class="badge badge-all">All Users</span></div>
+            <div class="perm-sub">All students can view and open uploaded files.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+        </div>
+        <div class="perm-row">
+          <div class="perm-info">
+            <div class="perm-label">Chat — Participate <span class="badge badge-all">All Users</span></div>
+            <div class="perm-sub">All members can send messages in any channel.</div>
+          </div>
+          <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+        </div>
+      </div>
+
+      <div class="perm-card">
+        <div class="perm-card-title">Current Session</div>
+        <div class="perm-row">
+          <div class="perm-info">
+            <div class="perm-label">Logged-in User</div>
+            <div class="perm-sub" id="permUserId">ID: —</div>
+          </div>
+          <div class="session-mono" id="permUserName">—</div>
+        </div>
+        <div class="perm-row">
+          <div class="perm-info">
+            <div class="perm-label">Session Token</div>
+            <div class="perm-sub">In-memory — resets on logout</div>
+          </div>
+          <div class="session-mono" id="sessionToken" style="font-size:11px;">—</div>
+        </div>
+        <div class="perm-row" style="border-bottom:none;padding-bottom:0;">
+          <div class="perm-info">
+            <div class="perm-label">How it works</div>
+            <div class="perm-sub">SessionManager.getCurrentUser() returns the logged-in User object. Every save/delete checks the userId matches.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .main -->
+</div><!-- end #appScreen -->
+
+<!-- ═══════════════════════════════
+     NOTE MODAL
+═══════════════════════════════ -->
+<div class="modal-overlay" id="noteModal">
+  <div class="modal">
+    <div class="modal-title" id="noteModalTitle">New Note</div>
+    <div class="field-group">
+      <label class="field-label">Title</label>
+      <input class="field-input" id="noteTitle" placeholder="e.g. DBMS Normalization Notes"/>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Subject</label>
+      <select class="field-input" id="noteSubject">
+        <option>DBMS</option><option>OS</option><option>CN</option>
+        <option>DSA</option><option>Java</option>
+      </select>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Content</label>
+      <textarea class="field-input" id="noteContent" placeholder="Write your notes here…" style="min-height:130px;"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('noteModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="saveNote()">Save Note</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PYQ META MODAL
+═══════════════════════════════ -->
+<div class="modal-overlay" id="pyqModal">
+  <div class="modal">
+    <div class="modal-title">Upload PYQ Details</div>
+    <input type="hidden" id="pyqFilePath"/>
+    <div class="field-group">
+      <label class="field-label">File</label>
+      <input class="field-input" id="pyqFileName" readonly style="opacity:.7;"/>
+    </div>
+    <div class="pyq-meta-row">
+      <div class="field-group">
+        <label class="field-label">Subject</label>
+        <select class="field-input" id="pyqSubject">
+          <option>DBMS</option><option>OS</option><option>CN</option>
+          <option>DSA</option><option>Java</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Year</label>
+        <input class="field-input" id="pyqYear" type="number" placeholder="2023" value="2023" min="2000" max="2099"/>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Title</label>
+      <input class="field-input" id="pyqTitle" placeholder="e.g. End-Sem Paper"/>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Description</label>
+      <textarea class="field-input" id="pyqDesc" placeholder="Topics covered…" style="min-height:80px;"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('pyqModal')">Cancel</button>
+      <button class="btn btn-accent" onclick="submitPYQ()">Upload PYQ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     VIEW NOTE MODAL (read-only)
+═══════════════════════════════ -->
+<div class="modal-overlay" id="viewNoteModal">
+  <div class="modal" style="width:580px;">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+      <div style="flex:1;min-width:0;padding-right:14px;">
+        <div class="modal-title" id="viewNoteTitle" style="margin-bottom:8px;word-break:break-word;"></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span class="note-tag" id="viewNoteSubject"></span>
+          <span style="font-size:12px;color:var(--text2);" id="viewNoteAuthor"></span>
+          <span style="font-size:11px;color:var(--text3);font-family:var(--mono);" id="viewNoteDate"></span>
+        </div>
+      </div>
+      <span style="font-size:11px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;white-space:nowrap;flex-shrink:0;">👁 read-only</span>
+    </div>
+    <div style="height:1px;background:var(--border);margin:16px 0;"></div>
+    <div id="viewNoteContent"
+         style="font-size:14px;line-height:1.85;color:var(--text2);white-space:pre-wrap;
+                max-height:380px;overflow-y:auto;padding:2px 4px;word-break:break-word;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('viewNoteModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     CONFIRM DELETE MODAL
+═══════════════════════════════ -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal" style="width:380px;">
+    <div class="modal-title">Confirm Delete</div>
+    <div style="color:var(--text2);font-size:14px;line-height:1.6;" id="deleteMsg">Are you sure you want to delete this?</div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="btn btn-danger" id="deleteConfirmBtn" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg"></span>
+</div>
+
+<!-- ═══════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════ -->
+<script>
+'use strict';
+
+// ── State ──────────────────────────────────────────────────
+const App = {
+  currentUser:   null,
+  currentPanel:  'dashboard',
+  currentChannel:'general',
+  editingNoteId: null,
+  editingNoteOwner: null,
+  deleteTarget:  null,   // { type, id, ownerId, filePath }
+};
+
+const channelMeta = {
+  general:{ title:'# General',       desc:'General discussion for all students' },
+  dbms:   { title:'# DBMS Study',    desc:'Normalization, SQL, ER diagrams' },
+  java:   { title:'# Java Help',     desc:'Swing, JDBC, OOP concepts' },
+  doubts: { title:'# Doubts',        desc:'Ask anything academic' },
+};
+
+// ── Bridge-ready callback ───────────────────────────────────
+function onJavaBridgeReady() {
+  console.log('Java bridge ready');
+}
+
+// ── Auth ───────────────────────────────────────────────────
+function switchAuthTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) =>
+    b.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='signup')));
+  document.getElementById('loginForm').classList.toggle('active', tab==='login');
+  document.getElementById('signupForm').classList.toggle('active', tab==='signup');
+  document.getElementById('loginErr').textContent = '';
+  document.getElementById('signupErr').textContent = '';
+}
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  if (!u||!p) { document.getElementById('loginErr').textContent='Fill in all fields.'; return; }
+  try {
+    const res = JSON.parse(java.login(u, p));
+    if (res.error) { document.getElementById('loginErr').textContent = res.error; return; }
+    App.currentUser = res;
+    document.getElementById('sidebarAvatar').textContent = res.initials;
+    document.getElementById('sidebarName').textContent   = res.fullName;
+    document.getElementById('permUserId').textContent    = 'ID: ' + res.id;
+    document.getElementById('permUserName').textContent  = res.fullName;
+    document.getElementById('sessionToken').textContent  = res.token;
+    document.getElementById('loginScreen').classList.remove('active');
+    document.getElementById('appScreen').classList.add('active');
+    loadDashboard();
+    showToast('Welcome back, ' + res.fullName.split(' ')[0] + '! 👋', 'success');
+  } catch(e) { document.getElementById('loginErr').textContent = 'Connection error: ' + e.message; }
+}
+
+function doRegister() {
+  const name  = document.getElementById('regName').value.trim();
+  const user  = document.getElementById('regUser').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  if (!name||!user||!pass) { document.getElementById('signupErr').textContent='Fill in all required fields.'; return; }
+  if (pass.length < 6)     { document.getElementById('signupErr').textContent='Password must be 6+ characters.'; return; }
+  try {
+    const res = JSON.parse(java.register(user, name, email, pass));
+    if (res.error) { document.getElementById('signupErr').textContent = res.error; return; }
+    showToast('Account created! Please sign in.', 'success');
+    switchAuthTab('login');
+  } catch(e) { document.getElementById('signupErr').textContent = 'Error: ' + e.message; }
+}
+
+function doLogout() {
+  try { java.logout(); } catch(e) {}
+  App.currentUser = null;
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').textContent = '';
+}
+
+// ── Panel navigation ───────────────────────────────────────
+function showPanel(name, navEl) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  App.currentPanel = name;
+  const titles = {
+    dashboard:'Dashboard', notes:'My Notes', resources:'Resources',
+    chat:'Chat', pyq:'PYQ Bank', perms:'Permissions'
+  };
+  document.getElementById('topbarTitle').textContent = titles[name] || name;
+  if (name==='dashboard') loadDashboard();
+  if (name==='notes')     loadNotes();
+  if (name==='resources') loadResources();
+  if (name==='chat')      loadChat(App.currentChannel);
+  if (name==='pyq')       loadPYQ('all');
+}
+
+function refreshCurrentPanel() {
+  showPanel(App.currentPanel, document.getElementById('nav-'+App.currentPanel));
+}
+
+// ── Dashboard ─────────────────────────────────────────────
+function loadDashboard() {
+  try {
+    const stats = JSON.parse(java.getStats());
+    document.getElementById('statNotes').textContent = stats.notes;
+    document.getElementById('statFiles').textContent = stats.files;
+    document.getElementById('statPYQs').textContent  = stats.pyqs;
+    document.getElementById('statMsgs').textContent  = '—';
+
+    // Recent notes (first 3)
+    const notes = JSON.parse(java.getNotes()).slice(0, 3);
+    const grid  = document.getElementById('dashNoteCards');
+    if (!notes.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div>No notes yet. Create your first!</div>';
+    } else {
+      grid.innerHTML = notes.map(n => noteCardHTML(n)).join('');
+    }
+    document.getElementById('noteBadge').textContent = stats.notes;
+
+    // Recent files (first 4)
+    const files = JSON.parse(java.getResources()).slice(0, 4);
+    document.getElementById('resBadge').textContent = stats.files;
+    const tbody = document.getElementById('dashFilesBody');
+    if (!files.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text3);padding:20px 16px;">No uploads yet.</td></tr>';
+    } else {
+      tbody.innerHTML = files.map(f => `
+        <tr>
+          <td><div class="file-name-cell"><span class="file-icon-big">${fileIcon(f.fileType)}</span>${f.filename}</div></td>
+          <td><span class="file-badge fb-${f.fileType}">${f.fileType}</span></td>
+          <td style="color:var(--text2);font-family:var(--mono);font-size:12px;">${f.fileSize}</td>
+          <td style="color:var(--text3);font-family:var(--mono);font-size:11px;">${f.uploadedAt}</td>
+        </tr>`).join('');
+    }
+  } catch(e) { console.error('loadDashboard:', e); }
+}
+
+// ── Notes ─────────────────────────────────────────────────
+function loadNotes() {
+  const filter = document.getElementById('noteSubjectFilter')?.value || '';
+  try {
+    let notes = JSON.parse(java.getNotes());
+    if (filter) notes = notes.filter(n => n.subject === filter);
+    const grid = document.getElementById('notesGrid');
+    document.getElementById('noteBadge').textContent = notes.length;
+    if (!notes.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div>No notes yet. Create your first one!</div>';
+      return;
+    }
+    grid.innerHTML = notes.map(n => noteCardHTML(n)).join('');
+  } catch(e) { console.error('loadNotes:', e); }
+}
+
+function noteCardHTML(n) {
+  const isOwner = App.currentUser && n.userId == App.currentUser.id;
+  const actions = isOwner
+    ? `<div class="act-btn" onclick="event.stopPropagation();openNoteModal(${n.id})" title="Edit">✏</div>
+       <div class="act-btn del" onclick="event.stopPropagation();promptDeleteNote(${n.id},${n.userId},'${escJs(n.title)}')" title="Delete">🗑</div>`
+    : `<span style="font-size:10px;color:var(--text3);padding:3px 6px;">👁 read-only</span>`;
+  return `
+    <div class="note-card" onclick="openNote(${n.id})" style="cursor:pointer;">
+      <div class="note-card-bar"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="note-card-title">${escHtml(n.title)}</div>
+        <div class="note-card-actions">${actions}</div>
+      </div>
+      <div class="note-card-preview">${escHtml(n.content||'(no content)')}</div>
+      <div class="note-card-footer">
+        <span class="note-tag">${escHtml(n.subject)}</span>
+        <span class="note-date">${n.updatedAt} · ${escHtml(n.ownerName?.split(' ')[0]||'')}</span>
+      </div>
+    </div>`;
+}
+
+// Opens a note — edit modal for owner, view modal for others
+function openNote(noteId) {
+  try {
+    const notes = JSON.parse(java.getNotes());
+    const n = notes.find(x => x.id == noteId);
+    if (!n) return;
+    const isOwner = App.currentUser && n.userId == App.currentUser.id;
+    if (isOwner) {
+      openNoteModal(noteId);
+    } else {
+      openViewModal(n);
+    }
+  } catch(e) { showToast('Could not open note: ' + e.message, 'error'); }
+}
+
+// Read-only view modal for non-owners
+function openViewModal(n) {
+  document.getElementById('viewNoteTitle').textContent   = n.title;
+  document.getElementById('viewNoteSubject').textContent = n.subject;
+  document.getElementById('viewNoteAuthor').textContent  = 'by ' + (n.ownerName || '');
+  document.getElementById('viewNoteDate').textContent    = n.updatedAt;
+  document.getElementById('viewNoteContent').textContent = n.content || '(no content)';
+  openModal('viewNoteModal');
+}
+
+function openNoteModal(noteId) {
+  if (noteId) {
+    try {
+      const notes = JSON.parse(java.getNotes());
+      const n = notes.find(x => x.id == noteId);
+      if (!n) return;
+      if (App.currentUser && n.userId != App.currentUser.id) {
+        openViewModal(n); return;
+      }
+      App.editingNoteId    = n.id;
+      App.editingNoteOwner = n.userId;
+      document.getElementById('noteModalTitle').textContent = 'Edit Note';
+      document.getElementById('noteTitle').value   = n.title;
+      document.getElementById('noteSubject').value = n.subject;
+      document.getElementById('noteContent').value = n.content || '';
+    } catch(e) { return; }
+  } else {
+    App.editingNoteId    = null;
+    App.editingNoteOwner = null;
+    document.getElementById('noteModalTitle').textContent = 'New Note';
+    document.getElementById('noteTitle').value   = '';
+    document.getElementById('noteSubject').value = 'DBMS';
+    document.getElementById('noteContent').value = '';
+  }
+  openModal('noteModal');
+  setTimeout(() => document.getElementById('noteTitle').focus(), 50);
+}
+
+function saveNote() {
+  const title   = document.getElementById('noteTitle').value.trim();
+  const subject = document.getElementById('noteSubject').value;
+  const content = document.getElementById('noteContent').value.trim();
+  if (!title) { showToast('Title cannot be empty','error'); return; }
+  try {
+    const res = JSON.parse(java.saveNote(App.editingNoteId || 0, title, content, subject));
+    if (res.error) { showToast(res.error,'error'); return; }
+    closeModal('noteModal');
+    showToast(App.editingNoteId ? 'Note updated!' : 'Note saved!', 'success');
+    loadNotes();
+    loadDashboard();
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+}
+
+function promptDeleteNote(noteId, ownerId, title) {
+  App.deleteTarget = { type:'note', id:noteId, ownerId };
+  document.getElementById('deleteMsg').textContent = `Delete note "${title}"? This cannot be undone.`;
+  openModal('deleteModal');
+}
+
+// ── Resources ─────────────────────────────────────────────
+function loadResources() {
+  const filter = document.getElementById('fileTypeFilter')?.value || '';
+  try {
+    let files = JSON.parse(java.getResources());
+    if (filter) files = files.filter(f => f.fileType === filter);
+    document.getElementById('resBadge').textContent = files.length;
+    const tbody = document.getElementById('filesTableBody');
+    if (!files.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text3);padding:24px 16px;">No files uploaded yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = files.map(f => {
+      const isOwner = App.currentUser && f.userId == App.currentUser.id;
+      const actions = isOwner
+        ? `<button class="btn btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="java.openFile('${escJs(f.filePath)}')">Open</button>
+           <button class="btn btn-danger" style="padding:5px 10px;font-size:12px;" onclick="promptDeleteFile(${f.id},${f.userId},'${escJs(f.filePath)}','${escJs(f.filename)}')">Delete</button>`
+        : `<button class="btn btn-ghost" style="padding:5px 10px;font-size:12px;" onclick="java.openFile('${escJs(f.filePath)}')">Open</button>
+           <span class="owner-only">owner only</span>`;
+      return `
+        <tr>
+          <td><div class="file-name-cell"><span class="file-icon-big">${fileIcon(f.fileType)}</span>${escHtml(f.filename)}</div></td>
+          <td><span class="file-badge fb-${f.fileType}">${f.fileType}</span></td>
+          <td style="color:var(--text2);font-family:var(--mono);font-size:12px;">${f.fileSize}</td>
+          <td style="color:var(--text2);">${escHtml(f.ownerName?.split(' ')[0]||'')}</td>
+          <td style="color:var(--text3);font-family:var(--mono);font-size:11px;">${f.uploadedAt}</td>
+          <td><div class="td-actions">${actions}</div></td>
+        </tr>`;
+    }).join('');
+  } catch(e) { console.error('loadResources:', e); }
+}
+
+function promptDeleteFile(id, ownerId, filePath, filename) {
+  App.deleteTarget = { type:'file', id, ownerId, filePath };
+  document.getElementById('deleteMsg').textContent = `Delete file "${filename}"? The file will be removed from disk too.`;
+  openModal('deleteModal');
+}
+
+// ── Unified Delete Confirm ──────────────────────────────────
+function confirmDelete() {
+  if (!App.deleteTarget) return;
+  const t = App.deleteTarget;
+  try {
+    let res;
+    if (t.type === 'note') {
+      res = JSON.parse(java.deleteNote(t.id, t.ownerId));
+    } else {
+      res = JSON.parse(java.deleteResource(t.id, t.ownerId, t.filePath));
+    }
+    if (res.error) { showToast(res.error,'error'); closeModal('deleteModal'); return; }
+    closeModal('deleteModal');
+    showToast('Deleted successfully','success');
+    if (t.type==='note') { loadNotes(); loadDashboard(); }
+    else { loadResources(); loadDashboard(); }
+  } catch(e) { showToast('Error: '+e.message,'error'); closeModal('deleteModal'); }
+  App.deleteTarget = null;
+}
+
+// ── Chat ──────────────────────────────────────────────────
+function switchChannel(channel, el) {
+  document.querySelectorAll('.chat-room').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+  App.currentChannel = channel;
+  const meta = channelMeta[channel] || { title:'#'+channel, desc:'' };
+  document.getElementById('chatChannelTitle').textContent = meta.title;
+  document.getElementById('chatChannelDesc').textContent  = meta.desc;
+  loadChat(channel);
+}
+
+function loadChat(channel) {
+  try {
+    const msgs = JSON.parse(java.getMessages(channel));
+    const box  = document.getElementById('chatMessages');
+    if (!msgs.length) {
+      box.innerHTML = '<div style="text-align:center;color:var(--text3);padding:32px;font-size:13px;">No messages yet. Say hello! 👋</div>';
+      return;
+    }
+    box.innerHTML = msgs.map(m => `
+      <div class="msg ${m.mine?'mine':''}">
+        <div class="msg-avatar" style="${m.mine?'background:linear-gradient(135deg,var(--accent3),var(--accent))':''}">${m.initials}</div>
+        <div class="msg-body">
+          <div class="msg-bubble ${m.mine?'mine':'other'}">${escHtml(m.content)}</div>
+          <div class="msg-meta">${m.mine?'You':escHtml(m.senderName)} · ${m.time}</div>
+        </div>
+      </div>`).join('');
+    box.scrollTop = box.scrollHeight;
+  } catch(e) { console.error('loadChat:', e); }
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  try {
+    const res = JSON.parse(java.sendMessage(App.currentChannel, text));
+    if (res.error) { showToast(res.error,'error'); return; }
+    input.value = '';
+    loadChat(App.currentChannel);
+  } catch(e) { showToast('Send failed: '+e.message,'error'); }
+}
+
+// ── PYQ ───────────────────────────────────────────────────
+function loadPYQ(subject) {
+  try {
+    const pyqs = JSON.parse(java.getPYQs(subject));
+    const grid = document.getElementById('pyqGrid');
+    if (!pyqs.length) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-icon">📚</div>No papers yet. Upload the first one!</div>';
+      return;
+    }
+    grid.innerHTML = pyqs.map(p => `
+      <div class="pyq-card">
+        <div class="pyq-card-top">
+          <span class="pyq-subject-badge">${escHtml(p.subject)}</span>
+          <span class="pyq-year">${p.year}</span>
+        </div>
+        <div class="pyq-title">${escHtml(p.title)}</div>
+        <div class="pyq-desc">${escHtml(p.description||'')}</div>
+        <div class="pyq-footer">
+          <span class="pyq-uploader">by ${escHtml(p.uploaderName||'')}</span>
+          ${p.filePath ? `<button class="btn btn-ghost" style="padding:5px 12px;font-size:12px;" onclick="java.openFile('${escJs(p.filePath)}')">Open PDF</button>` : '<span style="font-size:11px;color:var(--text3);">No file</span>'}
+        </div>
+      </div>`).join('');
+    document.getElementById('statPYQs').textContent = pyqs.length;
+  } catch(e) { console.error('loadPYQ:', e); }
+}
+
+function filterPYQ(subject, el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  loadPYQ(subject);
+}
+
+// Called by Java after file picker to show metadata dialog
+function openPYQMetaDialog(filePath, fileName) {
+  document.getElementById('pyqFilePath').value  = filePath;
+  document.getElementById('pyqFileName').value  = fileName;
+  document.getElementById('pyqTitle').value     = '';
+  document.getElementById('pyqDesc').value      = '';
+  openModal('pyqModal');
+}
+
+function submitPYQ() {
+  const filePath = document.getElementById('pyqFilePath').value;
+  const subject  = document.getElementById('pyqSubject').value;
+  const year     = parseInt(document.getElementById('pyqYear').value) || 2023;
+  const title    = document.getElementById('pyqTitle').value.trim();
+  const desc     = document.getElementById('pyqDesc').value.trim();
+  if (!title) { showToast('Title is required','error'); return; }
+  try {
+    const res = JSON.parse(java.uploadPYQ(filePath, subject, year, title, desc));
+    if (res.error) { showToast(res.error,'error'); return; }
+    closeModal('pyqModal');
+    showToast('PYQ uploaded!','success');
+    loadPYQ('all');
+    // reset chips
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    document.querySelector('.chip').classList.add('active');
+  } catch(e) { showToast('Error: '+e.message,'error'); }
+}
+
+// ── Search ─────────────────────────────────────────────────
+function handleSearch(q) {
+  if (!q.trim()) { loadNotes(); return; }
+  try {
+    const notes = JSON.parse(java.searchNotes(q));
+    const grid  = document.getElementById('notesGrid');
+    if (!notes.length) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div>No notes matching "${escHtml(q)}"</div>`;
+    } else {
+      grid.innerHTML = notes.map(n => noteCardHTML(n)).join('');
+    }
+    if (App.currentPanel !== 'notes') {
+      showPanel('notes', document.getElementById('nav-notes'));
+    }
+  } catch(e) {}
+}
+
+// ── Modal helpers ─────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o =>
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }));
+
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('loginScreen').classList.contains('active')) doLogin();
+});
+
+// ── Toast ─────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type='success') {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.className = 'toast show ' + type;
+  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3200);
+}
+
+// ── Utils ─────────────────────────────────────────────────
+function fileIcon(type) {
+  return {PDF:'📄',Image:'🖼️',Doc:'📃',PPT:'📊',Excel:'📈',Archive:'🗜️',Other:'📎'}[type] || '📎';
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escJs(s) {
+  if (!s) return '';
+  return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'\\"').replace(/\n/g,'\\n');
+}
+
+// ── Keyboard shortcut: Ctrl+N for new note ────────────────
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 'n' && App.currentUser) {
+    e.preventDefault();
+    showPanel('notes', document.getElementById('nav-notes'));
+    openNoteModal();
+  }
+});
+</script>
+</body>
+</html>
